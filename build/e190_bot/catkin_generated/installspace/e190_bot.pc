@@ -1,0 +1,8 @@
+prefix=/home/peter/190_ws/install
+
+Name: e190_bot
+Description: Description of e190_bot
+Version: 0.0.0
+Cflags: -I/home/peter/190_ws/install/include
+Libs: -L/home/peter/190_ws/install/lib 
+Requires: geometry_msgs roscpp rospy std_msgs message_runtime

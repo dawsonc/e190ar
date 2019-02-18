@@ -1,0 +1,2 @@
+e190_bot
+-DCATKIN_DEVEL_PREFIX=/home/peter/190_ws/devel -DCMAKE_INSTALL_PREFIX=/home/peter/190_ws/install -G Unix Makefiles
