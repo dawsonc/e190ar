@@ -21,7 +21,8 @@ class botControl:
     ######################
     def __init__(self):
         # create vars for hardware vs simulation
-        self.robot_mode = "HARDWARE_MODE"#"SIMULATION_MODE"
+        # self.robot_mode = "HARDWARE_MODE"#"SIMULATION_MODE"
+        self.robot_mode = "SIMULATION_MODE"
         #self.control_mode = "MANUAL_CONTROL_MODE"
 
         # setup xbee communication, change ttyUSB0 to the USB port dongle is in
@@ -150,69 +151,71 @@ class botControl:
             command = '$S @'
             self.xbee.tx(dest_addr = self.address, data = command)
             try:
-                # update = self.xbee.wait_read_frame()
-                update = "0 0 0 0 0"
+                update = self.xbee.wait_read_frame()
             except:
                 pass
+        elif(self.robot_mode == "SIMULATION_MODE"):
+            update = {"rf_data": "1 1 1 0 0 "}
+        
 
-            data = update['rf_data'].decode().split(' ')[:-1]
-            data = [int(x) for x in data]
-            encoder_measurements = data[-2:] #encoder readings are here, 2d array
+        data = update['rf_data'].decode().split(' ')[:-1]
+        data = [int(x) for x in data]
+        encoder_measurements = data[-2:] #encoder readings are here, 2d array
 
-            #print ("update sensors measurements ",encoder_measurements)
-    
+        #print ("update sensors measurements ",encoder_measurements)
 
-            #how about velocity?
-            time_diff = rospy.Time.now() - self.time #look at valus from previous cycle
 
-            #calculate difference in encoder position
-            self.diffEncoderL = encoder_measurements[0] - self.last_encoder_measurementL
-            self.diffEncoderR = encoder_measurements[1] - self.last_encoder_measurementR
-            #save new encoder measurement for use next loop
-            self.last_encoder_measurementL = encoder_measurements[0]
-            self.last_encoder_measurementR = encoder_measurements[1]
-            #Calculate the distance traveled by each wheel
-            deltaSR = 2*pi*self.wheel_radius*self.diffEncoderR*self.encoder_resolution 
-            deltaSL = 2*pi*self.wheel_radius*self.diffEncoderL*self.encoder_resolution
+        #how about velocity?
+        time_diff = rospy.Time.now() - self.time #look at valus from previous cycle
 
-            # Compute local coordinate updates
-            deltaS = (deltaSR + deltaSL) / 2.0
-            deltaTheta = (deltaSR - deltaSL) / (2.0 * self.L)
+        #calculate difference in encoder position
+        self.diffEncoderL = encoder_measurements[0] - self.last_encoder_measurementL
+        self.diffEncoderR = encoder_measurements[1] - self.last_encoder_measurementR
+        #save new encoder measurement for use next loop
+        self.last_encoder_measurementL = encoder_measurements[0]
+        self.last_encoder_measurementR = encoder_measurements[1]
+        #Calculate the distance traveled by each wheel
+        deltaSR = 2*pi*self.wheel_radius*self.diffEncoderR*self.encoder_resolution 
+        deltaSL = 2*pi*self.wheel_radius*self.diffEncoderL*self.encoder_resolution
 
-            # Grab old global coordinate values
-            px = self.Odom.pose.pose.position.x
-            py = self.Odom.pose.pose.position.y
-            # poseQuat = self.Odom.pose.pose.orientation
-            # poseQuat_arr = np.array([poseQuat.x, poseQuat.y, poseQuat.z, poseQuat.w])
-            # eulerAngles = euler_from_quaternion(poseQuat_arr, 'sxyz')
-            # theta = eulerAngles[2]
+        # Compute local coordinate updates
+        deltaS = (deltaSR + deltaSL) / 2.0
+        deltaTheta = (deltaSR - deltaSL) / (2.0 * self.L)
 
-            #update global coordinates
-            self.Odom.pose.pose.position.x = px + deltaS * cos(self.theta+deltaTheta/2.0)
-            self.Odom.pose.pose.position.y = py + deltaS * sin(self.theta+deltaTheta/2.0)
-            self.Odom.pose.pose.position.z = .0
-            self.theta = self.theta + deltaTheta #increment theta
-            quat = quaternion_from_euler(.0, .0, self.theta)
-            self.Odom.pose.pose.orientation.x = quat[0]
-            self.Odom.pose.pose.orientation.y = quat[1]
-            self.Odom.pose.pose.orientation.z = quat[2]
-            self.Odom.pose.pose.orientation.w = quat[3]
+        # Grab old global coordinate values
+        px = self.Odom.pose.pose.position.x
+        py = self.Odom.pose.pose.position.y
+        # poseQuat = self.Odom.pose.pose.orientation
+        # poseQuat_arr = np.array([poseQuat.x, poseQuat.y, poseQuat.z, poseQuat.w])
+        # eulerAngles = euler_from_quaternion(poseQuat_arr, 'sxyz')
+        # theta = eulerAngles[2]
 
-            # #https://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
-            self.odom_broadcaster.sendTransform(
-                (self.Odom.pose.pose.position.x, self.Odom.pose.pose.position.y, .0),
-                tf.transformations.quaternion_from_euler(.0, .0, 1.57),
-                rospy.Time.now(),
-                self.Odom.child_frame_id,
-                self.Odom.header.frame_id,
-            )
+        #update global coordinates
+        self.Odom.pose.pose.position.x = px + deltaS * cos(self.theta+deltaTheta/2.0)
+        self.Odom.pose.pose.position.y = py + deltaS * sin(self.theta+deltaTheta/2.0)
+        self.Odom.pose.pose.position.z = .0
+        self.theta = self.theta + deltaTheta #increment theta
+        quat = quaternion_from_euler(.0, .0, self.theta)
+        self.Odom.pose.pose.orientation.x = quat[0]
+        self.Odom.pose.pose.orientation.y = quat[1]
+        self.Odom.pose.pose.orientation.z = quat[2]
+        self.Odom.pose.pose.orientation.w = quat[3]
 
-            self.pubOdom.publish(self.Odom) #we publish in /odom topic
+        # #https://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
+        self.odom_broadcaster.sendTransform(
+            (self.Odom.pose.pose.position.x, self.Odom.pose.pose.position.y, .0),
+            tf.transformations.quaternion_from_euler(.0, .0, 1.57),
+            rospy.Time.now(),
+            self.Odom.child_frame_id,
+            self.Odom.header.frame_id,
+        )
 
-            #about range sensors, update here
-            range_measurements = data[:-2] #range readings are here, 3d array F, L, R
-            self.pubRangeSensor(range_measurements)
-            # print ("update ir measurements ",range_measurements)
+        self.pubOdom.publish(self.Odom) #we publish in /odom topic
+
+        #about range sensors, update here
+        range_measurements = data[:-2] #range readings are here, 3d array F, L, R
+        self.pubRangeSensor(range_measurements)
+        # print ("update ir measurements ",range_measurements)
 
         if(self.data_logging):
             self.log_data();
@@ -249,21 +252,21 @@ class botControl:
         # Also publish the transforms from each IR sensor frame into base_link frame
          self.ir_L_broadcaster.sendTransform(
              (0, 0.07125, 0.04), # left ir sensor is 7.125 cm to the left and 4 cm above chassis center of mass
-             tf.transformations.quaternion_from_euler(-pi/2, 0, 0),
+             tf.transformations.quaternion_from_euler(-pi/2, 0, 0, axes="rxyz"),
              rospy.Time.now(),
              "ir_L_frame",
              "base_link"
          )
          self.ir_C_broadcaster.sendTransform(
              (0.07125, 0, 0.04), # center ir sensor is 7.125 cm in front and 4 cm above chassis center of mass
-             tf.transformations.quaternion_from_euler(-pi/2, pi/2, 0),
+             tf.transformations.quaternion_from_euler(-pi/2, pi/2, 0, axes="rxyz"),
              rospy.Time.now(),
              "ir_C_frame",
              "base_link"
          )
          self.ir_R_broadcaster.sendTransform(
              (0, -0.07125, 0.04), # right ir sensor is 7.125 cm to the right and 4 cm above chassis center of mass
-             tf.transformations.quaternion_from_euler(-pi/2, pi, 0),
+             tf.transformations.quaternion_from_euler(-pi/2, pi, 0, axes="rxyz"),
              rospy.Time.now(),
              "ir_R_frame",
              "base_link"
