@@ -75,6 +75,11 @@ class botControl:
          self.ir_C = ir_sensor()
          self.ir_R = ir_sensor()
 
+         # Also need to initialize the IR sensor tf frames
+         self.ir_L_broadcaster = tf.TransformBroadcaster()
+         self.ir_C_broadcaster = tf.TransformBroadcaster()
+         self.ir_R_broadcaster = tf.TransformBroadcaster()
+
     ############################
     # odom_init
     # Initialize odometry using tf package broadcaster system
@@ -145,7 +150,8 @@ class botControl:
             command = '$S @'
             self.xbee.tx(dest_addr = self.address, data = command)
             try:
-                update = self.xbee.wait_read_frame()
+                # update = self.xbee.wait_read_frame()
+                update = "0 0 0 0 0"
             except:
                 pass
 
@@ -205,7 +211,7 @@ class botControl:
 
             #about range sensors, update here
             range_measurements = data[:-2] #range readings are here, 3d array F, L, R
-            # self.pubRangeSensor(range_measurements)
+            self.pubRangeSensor(range_measurements)
             # print ("update ir measurements ",range_measurements)
 
         if(self.data_logging):
@@ -233,11 +239,35 @@ class botControl:
          self.ir_C.distance = self.ir_cal(ranges[0])
          self.ir_R.distance = self.ir_cal(ranges[2])
 
-         print("Distance Values", self.ir_L.distance)
+        #  print("Distance Values", self.ir_L.distance)
         
+        # Publish the range measurements
          self.pubDistL.publish(self.ir_L)
          self.pubDistC.publish(self.ir_C)
          self.pubDistR.publish(self.ir_R)
+
+        # Also publish the transforms from each IR sensor frame into base_link frame
+         self.ir_L_broadcaster.sendTransform(
+             (0, 0.07125, 0.04), # left ir sensor is 7.125 cm to the left and 4 cm above chassis center of mass
+             tf.transformations.quaternion_from_euler(-pi/2, 0, 0),
+             rospy.Time.now(),
+             "ir_L_frame",
+             "base_link"
+         )
+         self.ir_C_broadcaster.sendTransform(
+             (0.07125, 0, 0.04), # center ir sensor is 7.125 cm in front and 4 cm above chassis center of mass
+             tf.transformations.quaternion_from_euler(-pi/2, pi/2, 0),
+             rospy.Time.now(),
+             "ir_C_frame",
+             "base_link"
+         )
+         self.ir_R_broadcaster.sendTransform(
+             (0, -0.07125, 0.04), # right ir sensor is 7.125 cm to the right and 4 cm above chassis center of mass
+             tf.transformations.quaternion_from_euler(-pi/2, pi, 0),
+             rospy.Time.now(),
+             "ir_R_frame",
+             "base_link"
+         )
 
     ############################
     # make_headers
