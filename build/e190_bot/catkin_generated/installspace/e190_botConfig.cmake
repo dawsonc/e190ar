@@ -67,14 +67,23 @@ set(e190_bot_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
+<<<<<<< HEAD
+  set(e190_bot_SOURCE_PREFIX /home/dawsonc/e190_ws/src/e190_bot)
+  set(e190_bot_DEVEL_PREFIX /home/dawsonc/e190_ws/devel)
+=======
   set(e190_bot_SOURCE_PREFIX /home/peter/190_ws/src/e190_bot)
   set(e190_bot_DEVEL_PREFIX /home/peter/190_ws/devel)
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
   set(e190_bot_INSTALL_PREFIX "")
   set(e190_bot_PREFIX ${e190_bot_DEVEL_PREFIX})
 else()
   set(e190_bot_SOURCE_PREFIX "")
   set(e190_bot_DEVEL_PREFIX "")
+<<<<<<< HEAD
+  set(e190_bot_INSTALL_PREFIX /home/dawsonc/e190_ws/install)
+=======
   set(e190_bot_INSTALL_PREFIX /home/peter/190_ws/install)
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
   set(e190_bot_PREFIX ${e190_bot_INSTALL_PREFIX})
 endif()
 
@@ -91,9 +100,15 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(e190_bot_FOUND_CATKIN_PROJECT TRUE)
 
+<<<<<<< HEAD
+if(NOT " " STREQUAL " ")
+  set(e190_bot_INCLUDE_DIRS "")
+  set(_include_dirs "")
+=======
 if(NOT "include " STREQUAL " ")
   set(e190_bot_INCLUDE_DIRS "")
   set(_include_dirs "include")
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")
@@ -110,7 +125,11 @@ if(NOT "include " STREQUAL " ")
         message(FATAL_ERROR "Project 'e190_bot' specifies '${idir}' as an include dir, which is not found.  It does not exist in '${include}'.  ${_report}")
       endif()
     else()
+<<<<<<< HEAD
+      message(FATAL_ERROR "Project 'e190_bot' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/dawsonc/e190_ws/install/${idir}'.  ${_report}")
+=======
       message(FATAL_ERROR "Project 'e190_bot' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/peter/190_ws/install/${idir}'.  ${_report}")
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
     endif()
     _list_append_unique(e190_bot_INCLUDE_DIRS ${include})
   endforeach()
@@ -129,7 +148,11 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
+<<<<<<< HEAD
+    foreach(path /home/dawsonc/e190_ws/install/lib;/home/dawsonc/e190_ws/devel/lib;/opt/ros/kinetic/lib)
+=======
     foreach(path /home/peter/190_ws/install/lib;/home/peter/190_ws/devel/lib;/home/peter/catkin_ws/devel/lib;/opt/ros/kinetic/lib)
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
@@ -152,7 +175,11 @@ foreach(library ${libraries})
   endif()
 endforeach()
 
+<<<<<<< HEAD
+set(e190_bot_EXPORTED_TARGETS "")
+=======
 set(e190_bot_EXPORTED_TARGETS "e190_bot_generate_messages_cpp;e190_bot_generate_messages_eus;e190_bot_generate_messages_lisp;e190_bot_generate_messages_nodejs;e190_bot_generate_messages_py")
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
 # create dummy targets for exported code generation targets to make life of users easier
 foreach(t ${e190_bot_EXPORTED_TARGETS})
   if(NOT TARGET ${t})
@@ -160,7 +187,11 @@ foreach(t ${e190_bot_EXPORTED_TARGETS})
   endif()
 endforeach()
 
+<<<<<<< HEAD
+set(depends "")
+=======
 set(depends "geometry_msgs;roscpp;rospy;std_msgs;message_runtime")
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
 foreach(depend ${depends})
   string(REPLACE " " ";" depend_list ${depend})
   # the package name of the dependency must be kept in a unique variable so that it is not overwritten in recursive calls
@@ -189,7 +220,11 @@ foreach(depend ${depends})
   list(APPEND e190_bot_EXPORTED_TARGETS ${${e190_bot_dep}_EXPORTED_TARGETS})
 endforeach()
 
+<<<<<<< HEAD
+set(pkg_cfg_extras "")
+=======
 set(pkg_cfg_extras "e190_bot-msg-extras.cmake")
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
 foreach(extra ${pkg_cfg_extras})
   if(NOT IS_ABSOLUTE ${extra})
     set(extra ${e190_bot_DIR}/${extra})

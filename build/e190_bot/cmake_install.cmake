@@ -1,8 +1,16 @@
+<<<<<<< HEAD
+# Install script for directory: /home/dawsonc/e190_ws/src/e190_bot
+
+# Set the install prefix
+if(NOT DEFINED CMAKE_INSTALL_PREFIX)
+  set(CMAKE_INSTALL_PREFIX "/home/dawsonc/e190_ws/install")
+=======
 # Install script for directory: /home/peter/190_ws/src/e190_bot
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
   set(CMAKE_INSTALL_PREFIX "/home/peter/190_ws/install")
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,6 +41,9 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
+<<<<<<< HEAD
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/dawsonc/e190_ws/build/e190_bot/catkin_generated/installspace/e190_bot.pc")
+=======
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/e190_bot/msg" TYPE FILE FILES "/home/peter/190_ws/src/e190_bot/msg/ir_sensor.msg")
 endif()
 
@@ -70,16 +81,26 @@ endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/e190_bot/cmake" TYPE FILE FILES "/home/peter/190_ws/build/e190_bot/catkin_generated/installspace/e190_bot-msg-extras.cmake")
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/e190_bot/cmake" TYPE FILE FILES
+<<<<<<< HEAD
+    "/home/dawsonc/e190_ws/build/e190_bot/catkin_generated/installspace/e190_botConfig.cmake"
+    "/home/dawsonc/e190_ws/build/e190_bot/catkin_generated/installspace/e190_botConfig-version.cmake"
+=======
     "/home/peter/190_ws/build/e190_bot/catkin_generated/installspace/e190_botConfig.cmake"
     "/home/peter/190_ws/build/e190_bot/catkin_generated/installspace/e190_botConfig-version.cmake"
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
+<<<<<<< HEAD
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/e190_bot" TYPE FILE FILES "/home/dawsonc/e190_ws/src/e190_bot/package.xml")
+=======
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/e190_bot" TYPE FILE FILES "/home/peter/190_ws/src/e190_bot/package.xml")
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
 endif()
 

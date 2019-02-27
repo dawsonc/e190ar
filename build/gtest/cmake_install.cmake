@@ -2,7 +2,11 @@
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
+<<<<<<< HEAD
+  set(CMAKE_INSTALL_PREFIX "/home/dawsonc/e190_ws/install")
+=======
   set(CMAKE_INSTALL_PREFIX "/home/peter/190_ws/install")
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,7 +38,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
+<<<<<<< HEAD
+  include("/home/dawsonc/e190_ws/build/gtest/gtest/cmake_install.cmake")
+=======
   include("/home/peter/190_ws/build/gtest/gtest/cmake_install.cmake")
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
 
 endif()
 

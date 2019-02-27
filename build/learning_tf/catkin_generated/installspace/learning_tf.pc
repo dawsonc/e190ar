@@ -1,0 +1,8 @@
+prefix=/home/dawsonc/e190_ws/install
+
+Name: learning_tf
+Description: Description of learning_tf
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/dawsonc/e190_ws/install/lib 
+Requires: 

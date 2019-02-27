@@ -10,7 +10,11 @@
 
 # since this file is sourced either use the provided _CATKIN_SETUP_DIR
 # or fall back to the destination set at configure time
+<<<<<<< HEAD
+: ${_CATKIN_SETUP_DIR:=/home/dawsonc/e190_ws/install}
+=======
 : ${_CATKIN_SETUP_DIR:=/home/peter/190_ws/install}
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
 _SETUP_UTIL="$_CATKIN_SETUP_DIR/_setup_util.py"
 unset _CATKIN_SETUP_DIR
 

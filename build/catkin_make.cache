@@ -1,2 +1,7 @@
+<<<<<<< HEAD
+e190_bot:learning_tf
+-DCATKIN_DEVEL_PREFIX=/home/dawsonc/e190_ws/devel -DCMAKE_INSTALL_PREFIX=/home/dawsonc/e190_ws/install -G Unix Makefiles
+=======
 e190_bot
 -DCATKIN_DEVEL_PREFIX=/home/peter/190_ws/devel -DCMAKE_INSTALL_PREFIX=/home/peter/190_ws/install -G Unix Makefiles
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b

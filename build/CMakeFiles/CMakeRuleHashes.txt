@@ -1,4 +1,7 @@
 # Hashes of file build rules.
+<<<<<<< HEAD
+d22c3c27a9194f98b5545bea7afb492b CMakeFiles/clean_test_results
+=======
 d65b69ee606f232bc15b099a52627da7 /home/peter/190_ws/devel/include/e190_bot/ir_sensor.h
 3d8ae8b869c87e16de44021d23e41d19 /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/__init__.py
 26ca9ecb64130ba4de0107cca827ea99 /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/_ir_sensor.py
@@ -13,3 +16,4 @@ b4ee4379bdb7d901de34fb2b27de4b8f e190_bot/CMakeFiles/e190_bot_generate_messages_
 b4ee4379bdb7d901de34fb2b27de4b8f e190_bot/CMakeFiles/e190_bot_generate_messages_lisp
 b4ee4379bdb7d901de34fb2b27de4b8f e190_bot/CMakeFiles/e190_bot_generate_messages_nodejs
 b4ee4379bdb7d901de34fb2b27de4b8f e190_bot/CMakeFiles/e190_bot_generate_messages_py
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b

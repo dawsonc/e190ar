@@ -1,8 +1,18 @@
+<<<<<<< HEAD
+prefix=/home/dawsonc/e190_ws/install
+=======
 prefix=/home/peter/190_ws/install
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
 
 Name: e190_bot
 Description: Description of e190_bot
 Version: 0.0.0
+<<<<<<< HEAD
+Cflags: 
+Libs: -L/home/dawsonc/e190_ws/install/lib 
+Requires: 
+=======
 Cflags: -I/home/peter/190_ws/install/include
 Libs: -L/home/peter/190_ws/install/lib 
 Requires: geometry_msgs roscpp rospy std_msgs message_runtime
+>>>>>>> f71165a0ade14f78aa727a313e9ebe52fa57ba0b
