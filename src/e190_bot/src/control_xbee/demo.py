@@ -7,7 +7,7 @@ from geometry_msgs.msg import Twist
 def cmd_vel_Publisher():
     pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
     rospy.init_node('cmd_vel_Publisher', anonymous=True)
-    rate = rospy.Rate(20)    #20 Hz
+    rate = rospy.Rate(10)    #10 Hz
     startTime = rospy.get_time()
     state = 0 # 0 for forward, 1 for turn, 2 for stop
 
@@ -15,7 +15,7 @@ def cmd_vel_Publisher():
     while not rospy.is_shutdown():
         twist = Twist()        #message object is a Twist
         deltaT = rospy.get_time() - startTime
-
+        #Go through the steps of a square.  Used calibration for carpet
         if deltaT < 4:
             state = 0
         elif (4 <= deltaT and deltaT < 5):
@@ -34,10 +34,10 @@ def cmd_vel_Publisher():
             state = 2
 
         if state == 0:
-            twist.linear.x = 0.25
+            twist.linear.x = 0.25  #go straight state
 
         elif state == 1:
-            twist.angular.z = 3.7/2 #Empirical value to turn 90 degrees
+            twist.angular.z = 3.7/2 #Empirical value to turn 90 degrees state
         else:
             pass
 

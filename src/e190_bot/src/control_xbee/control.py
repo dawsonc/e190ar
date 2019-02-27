@@ -59,19 +59,25 @@ class botControl:
         self.L = 7.125*10**(-2)   #Wheel base radius 7.125 cm
         self.carpetCorrection = 1.3 #Correction factor for motor signal when on carpet
 
-        self.rate = rospy.Rate(2)
+        self.rate = rospy.Rate(5)
         while not rospy.is_shutdown():
             self.odom_pub();
+            #print('hello')
             self.rate.sleep();
 
+    ############################
+    # ir_init
+    # Initializes ir sensor by creating custom ir_sensor objects with a float32 distance datamember
+    # Left, Center, Right
+    ############################
     def ir_init(self):
-         self.ir_L = ir_sensor()
+         self.ir_L = ir_sensor() 
          self.ir_C = ir_sensor()
          self.ir_R = ir_sensor()
 
     ############################
     # odom_init
-    # Initialize odometry node using tf package broadcaster system
+    # Initialize odometry using tf package broadcaster system
     ############################
     def odom_init(self):
         self.Odom = Odometry()
@@ -87,7 +93,7 @@ class botControl:
 
     ############################
     # log_init
-    # Initialize logging node 
+    # Initialize logging  
     ############################
     def log_init(self,data_logging=False,file_name="log.txt"):
         self.data_logging=data_logging
@@ -98,7 +104,7 @@ class botControl:
     ############################
     # cmd_vel_callback
     # Receive a CmdVel object from human input via the xBee
-    # CmdVel objects have a linear component and an angular component
+    # CmdVel objects have a linear component and an angular component in m/s or rad/s
     # Translatetion along the x,y or z axis (x is forward, y to robot left, z vertical)
     # Rotation along the x,y, or z axis (ccw is positive, cw is negative)
     # Rotating right wheel forward produces ccw, left forward is cw
@@ -116,8 +122,13 @@ class botControl:
             RPWM =abs(int(RCMD/31.0838*255))          #pwm needs integer values from 1-255, not negative
             LPWM =abs(int(LCMD/30.5738*255))
 
+            if (RPWM > 0):
+                RPWM = max(RPWM, 25)
+            if (LPWM > 0):
+                LPWM = max(LPWM, 25)
+
             command = '$M ' + str(LDIR) + ' ' + str(LPWM) + ' ' + str(RDIR) + ' ' + str(RPWM) + '@'
-            print("cmd: " + str(command))
+            # print("cmd: " + str(command))
 
             #command = '$M ' + str(LDIR) + ' ' + str(LPWM) + ' ' + str(RDIR) + ' ' + str(RPWM) + '@'
             self.xbee.tx(dest_addr = self.address, data = command)
@@ -126,7 +137,6 @@ class botControl:
     # odom_pub
     # utilizes tf poses and transforms to format odometry data
     # publishes and logs the data
-    # needs to be edited to perform the correct transforms
     ###################################
     def odom_pub(self):
         if(self.robot_mode == "HARDWARE_MODE"):
@@ -148,13 +158,14 @@ class botControl:
 
             #how about velocity?
             time_diff = rospy.Time.now() - self.time #look at valus from previous cycle
- 
+
+            #calculate difference in encoder position
             self.diffEncoderL = encoder_measurements[0] - self.last_encoder_measurementL
             self.diffEncoderR = encoder_measurements[1] - self.last_encoder_measurementR
-
+            #save new encoder measurement for use next loop
             self.last_encoder_measurementL = encoder_measurements[0]
             self.last_encoder_measurementR = encoder_measurements[1]
-
+            #Calculate the distance traveled by each wheel
             deltaSR = 2*pi*self.wheel_radius*self.diffEncoderR*self.encoder_resolution 
             deltaSL = 2*pi*self.wheel_radius*self.diffEncoderL*self.encoder_resolution
 
@@ -162,7 +173,7 @@ class botControl:
             deltaS = (deltaSR + deltaSL) / 2.0
             deltaTheta = (deltaSR - deltaSL) / (2.0 * self.L)
 
-            # Copute global coordinate updates
+            # Grab old global coordinate values
             px = self.Odom.pose.pose.position.x
             py = self.Odom.pose.pose.position.y
             # poseQuat = self.Odom.pose.pose.orientation
@@ -170,12 +181,11 @@ class botControl:
             # eulerAngles = euler_from_quaternion(poseQuat_arr, 'sxyz')
             # theta = eulerAngles[2]
 
-            
-
+            #update global coordinates
             self.Odom.pose.pose.position.x = px + deltaS * cos(self.theta+deltaTheta/2.0)
             self.Odom.pose.pose.position.y = py + deltaS * sin(self.theta+deltaTheta/2.0)
             self.Odom.pose.pose.position.z = .0
-            self.theta = self.theta + deltaTheta
+            self.theta = self.theta + deltaTheta #increment theta
             quat = quaternion_from_euler(.0, .0, self.theta)
             self.Odom.pose.pose.orientation.x = quat[0]
             self.Odom.pose.pose.orientation.y = quat[1]
@@ -195,8 +205,8 @@ class botControl:
 
             #about range sensors, update here
             range_measurements = data[:-2] #range readings are here, 3d array F, L, R
-            self.pubRangeSensor(range_measurements)
-            print ("update ir measurements ",range_measurements)
+            # self.pubRangeSensor(range_measurements)
+            # print ("update ir measurements ",range_measurements)
 
         if(self.data_logging):
             self.log_data();
@@ -219,7 +229,7 @@ class botControl:
     # pubish ir sensor data after converted to actual distances
     ############################
     def pubRangeSensor(self,ranges):
-         self.ir_L.distance = self.ir_cal(ranges[1]) #range was in F,L,R
+         self.ir_L.distance = self.ir_cal(ranges[1]) #range was in F,L,R order so need to rearange
          self.ir_C.distance = self.ir_cal(ranges[0])
          self.ir_R.distance = self.ir_cal(ranges[2])
 
@@ -241,6 +251,7 @@ class botControl:
     ############################
     # log_data
     # logs data when odometry is being published
+    # Not being done yet
     ############################
     def log_data(self):
         f = open(rospack.get_path('e190_bot')+"/data/"+self.file_name, 'a+')
