@@ -1,11 +1,11 @@
 <launch>
 
-  <group ns="control">
-    <node pkg="e190_bot" name="control_node" type="control.py"/>
-  </group>
+  <node pkg="e190_bot" type="control.py" name = "botControl"/>
+  <node pkg="e190_bot" type="demo.py"  name="Square_nav"/>
 
-  <group ns="control">
-    <node pkg="e190_bot" name="Square_nav" type="demo.py"/>
-  </group
+  <node pkg="rviz" type="rviz" name="rviz" />
+  
+
+ 
 
 </launch>

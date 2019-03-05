@@ -83,7 +83,13 @@ class botControl:
         self.Odom = Odometry()
         self.Odom.header.frame_id = "odom_wheel"
         self.Odom.child_frame_id = "base_link"
+        self.ir_L_id = "ir_L"
+        self.ir_R_id = "ir_R"
+        self.ir_C_id = "ir_C"
         self.odom_broadcaster = tf.TransformBroadcaster()
+        self.ir_L_broadcaster = tf.TransformBroadcaster()
+        self.ir_R_broadcaster = tf.TransformBroadcaster()
+        self.ir_C_broadcaster = tf.TransformBroadcaster()
         self.encoder_resolution = 1.0/1440.0
         self.wheel_radius = .035 #unit in m
         self.L = 7.125*10**-2 # m
@@ -122,10 +128,15 @@ class botControl:
             RPWM =abs(int(RCMD/31.0838*255))          #pwm needs integer values from 1-255, not negative
             LPWM =abs(int(LCMD/30.5738*255))
 
+            # Avoid deadband
             if (RPWM > 0):
-                RPWM = max(RPWM, 25)
+                RPWM = max(RPWM, 30)
             if (LPWM > 0):
-                LPWM = max(LPWM, 25)
+                LPWM = max(LPWM, 30)
+
+            # Avoid dropping voltage so far that radio stops
+            LPWM = min(LPWM, 175)
+            RPWM = min(RPWM, 175)
 
             command = '$M ' + str(LDIR) + ' ' + str(LPWM) + ' ' + str(RDIR) + ' ' + str(RPWM) + '@'
             # print("cmd: " + str(command))
@@ -141,72 +152,100 @@ class botControl:
     def odom_pub(self):
         if(self.robot_mode == "HARDWARE_MODE"):
             self.count = self.count + 1
-            print(self.count)
+            # print(self.count)
             command = '$S @'
             self.xbee.tx(dest_addr = self.address, data = command)
             try:
-                update = self.xbee.wait_read_frame()
+                update = self.xbee.wait_read_frame(0.1)
+
+                data = update['rf_data'].decode().split(' ')[:-1]
+                data = [int(x) for x in data]
+                encoder_measurements = data[-2:] #encoder readings are here, 2d array
+
+                #print ("update sensors measurements ",encoder_measurements)
+        
+
+                #how about velocity?
+                time_diff = rospy.Time.now() - self.time #look at valus from previous cycle
+
+                #calculate difference in encoder position
+                self.diffEncoderL = encoder_measurements[0] - self.last_encoder_measurementL
+                self.diffEncoderR = encoder_measurements[1] - self.last_encoder_measurementR
+                #save new encoder measurement for use next loop
+                self.last_encoder_measurementL = encoder_measurements[0]
+                self.last_encoder_measurementR = encoder_measurements[1]
+                #Calculate the distance traveled by each wheel
+                deltaSR = 2*pi*self.wheel_radius*self.diffEncoderR*self.encoder_resolution 
+                deltaSL = 2*pi*self.wheel_radius*self.diffEncoderL*self.encoder_resolution
+
+                # Compute local coordinate updates
+                deltaS = (deltaSR + deltaSL) / 2.0
+                deltaTheta = (deltaSR - deltaSL) / (2.0 * self.L)
+
+                # Grab old global coordinate values
+                px = self.Odom.pose.pose.position.x
+                py = self.Odom.pose.pose.position.y
+                # poseQuat = self.Odom.pose.pose.orientation
+                # poseQuat_arr = np.array([poseQuat.x, poseQuat.y, poseQuat.z, poseQuat.w])
+                # eulerAngles = euler_from_quaternion(poseQuat_arr, 'sxyz')
+                # theta = eulerAngles[2]
+
+                #update global coordinates
+                self.Odom.pose.pose.position.x = px + deltaS * cos(self.theta+deltaTheta/2.0)
+                self.Odom.pose.pose.position.y = py + deltaS * sin(self.theta+deltaTheta/2.0)
+                self.Odom.pose.pose.position.z = .0
+                self.theta = self.theta + deltaTheta #increment theta
+                print(self.theta)
+                quat = quaternion_from_euler(.0, .0, self.theta)
+                self.Odom.pose.pose.orientation.x = quat[0]
+                self.Odom.pose.pose.orientation.y = quat[1]
+                self.Odom.pose.pose.orientation.z = quat[2]
+                self.Odom.pose.pose.orientation.w = quat[3]
+
+                # #https://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
+                self.odom_broadcaster.sendTransform(
+                    (self.Odom.pose.pose.position.x, self.Odom.pose.pose.position.y, .0),
+                    tf.transformations.quaternion_from_euler(.0, .0, 1.57),
+                    rospy.Time.now(),
+                    self.Odom.child_frame_id,
+                    self.Odom.header.frame_id,
+                )
+
+                #ir_L_broadcaster
+                self.ir_L_broadcaster.sendTransform(
+                    (0, self.L/2, 2*self.wheel_radius),
+                    tf.transformations.quaternion_from_euler(-pi/2, .0, .0, 'rxyz'),
+                    rospy.Time.now(),
+                    self.ir_L_id,
+                    self.Odom.child_frame_id,
+                )
+
+                #ir_R_broadcaster
+                self.ir_R_broadcaster.sendTransform(
+                    (0, -self.L/2, 2*self.wheel_radius),
+                    tf.transformations.quaternion_from_euler(-pi/2, pi, .0,'rxyz'),
+                    rospy.Time.now(),
+                    self.ir_R_id,
+                    self.Odom.child_frame_id,
+                )
+
+                #ir_C_broadcaster
+                self.ir_C_broadcaster.sendTransform(
+                    (self.L/2,0, self.wheel_radius),
+                    tf.transformations.quaternion_from_euler(0, pi/2, -pi/2,'rxyz'),
+                    rospy.Time.now(),
+                    self.ir_C_id,
+                    self.Odom.child_frame_id,
+                )
+
+                self.pubOdom.publish(self.Odom) #we publish in /odom topic
+
+                #about range sensors, update here
+                range_measurements = data[:-2] #range readings are here, 3d array F, L, R
+                # self.pubRangeSensor(range_measurements)
+                # print ("update ir measurements ",range_measurements)
             except:
-                pass
-
-            data = update['rf_data'].decode().split(' ')[:-1]
-            data = [int(x) for x in data]
-            encoder_measurements = data[-2:] #encoder readings are here, 2d array
-
-            #print ("update sensors measurements ",encoder_measurements)
-    
-
-            #how about velocity?
-            time_diff = rospy.Time.now() - self.time #look at valus from previous cycle
-
-            #calculate difference in encoder position
-            self.diffEncoderL = encoder_measurements[0] - self.last_encoder_measurementL
-            self.diffEncoderR = encoder_measurements[1] - self.last_encoder_measurementR
-            #save new encoder measurement for use next loop
-            self.last_encoder_measurementL = encoder_measurements[0]
-            self.last_encoder_measurementR = encoder_measurements[1]
-            #Calculate the distance traveled by each wheel
-            deltaSR = 2*pi*self.wheel_radius*self.diffEncoderR*self.encoder_resolution 
-            deltaSL = 2*pi*self.wheel_radius*self.diffEncoderL*self.encoder_resolution
-
-            # Compute local coordinate updates
-            deltaS = (deltaSR + deltaSL) / 2.0
-            deltaTheta = (deltaSR - deltaSL) / (2.0 * self.L)
-
-            # Grab old global coordinate values
-            px = self.Odom.pose.pose.position.x
-            py = self.Odom.pose.pose.position.y
-            # poseQuat = self.Odom.pose.pose.orientation
-            # poseQuat_arr = np.array([poseQuat.x, poseQuat.y, poseQuat.z, poseQuat.w])
-            # eulerAngles = euler_from_quaternion(poseQuat_arr, 'sxyz')
-            # theta = eulerAngles[2]
-
-            #update global coordinates
-            self.Odom.pose.pose.position.x = px + deltaS * cos(self.theta+deltaTheta/2.0)
-            self.Odom.pose.pose.position.y = py + deltaS * sin(self.theta+deltaTheta/2.0)
-            self.Odom.pose.pose.position.z = .0
-            self.theta = self.theta + deltaTheta #increment theta
-            quat = quaternion_from_euler(.0, .0, self.theta)
-            self.Odom.pose.pose.orientation.x = quat[0]
-            self.Odom.pose.pose.orientation.y = quat[1]
-            self.Odom.pose.pose.orientation.z = quat[2]
-            self.Odom.pose.pose.orientation.w = quat[3]
-
-            # #https://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
-            self.odom_broadcaster.sendTransform(
-                (self.Odom.pose.pose.position.x, self.Odom.pose.pose.position.y, .0),
-                tf.transformations.quaternion_from_euler(.0, .0, 1.57),
-                rospy.Time.now(),
-                self.Odom.child_frame_id,
-                self.Odom.header.frame_id,
-            )
-
-            self.pubOdom.publish(self.Odom) #we publish in /odom topic
-
-            #about range sensors, update here
-            range_measurements = data[:-2] #range readings are here, 3d array F, L, R
-            # self.pubRangeSensor(range_measurements)
-            # print ("update ir measurements ",range_measurements)
+                print("Dropped packet!")
 
         if(self.data_logging):
             self.log_data();

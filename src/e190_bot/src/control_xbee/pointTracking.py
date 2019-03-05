@@ -7,7 +7,7 @@ import numpy as np
 from math import cos, sin, pi, exp, sqrt, atan2
 
 from geometry_msgs.msg import Twist, Pose
-from nav_msgs.msg import Odometry
+from nav_msgs.msg import Odometry, Path
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 class PointTracker:
@@ -17,17 +17,21 @@ class PointTracker:
         self.current_robot_pose = Pose()
         #set the values of the pose
         self.current_target = Pose()
+        self.current_path = Path()
+        self.current_path_index = 0
         self.alpha = 0
         self.beta = 0
         self.rho = 0
-        self.k_alpha = -3/8
-        self.k_beta = 5/8
-        self.k_rho = 1
+        self.k_alpha = -6/8
+        self.k_beta = 2/8
+        self.k_rho = 0.5
 
         rospy.init_node('pointTracking', anonymous=True)
         self.pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
         self.odom_sub = rospy.Subscriber('odom', Odometry, self.odom_callback)
-        self.target_sub = rospy.Subscriber('targetPose', Pose, self.target_callback)
+        #Now get targets from the goal_path topic
+        #self.target_sub = rospy.Subscriber('targetPose', Pose, self.target_callback)
+        self.path_sub = rospy.Subscriber('goal_Path', Path, self.path_callback)
         self.rate = rospy.Rate(5)    #10 Hz
 
         
@@ -37,7 +41,13 @@ class PointTracker:
         
     def target_callback(self, target):
         self.current_target.position = target.position
-        print("hi")
+        #print("hi")
+
+    def path_callback(self, path):
+        self.current_path = path
+        self.current_path_index = 0
+        print("Received path: " + str(self.current_path.poses))
+        self.current_target = self.current_path.poses[self.current_path_index].pose
     
     def odom_callback(self, odom):
         delta_x = self.current_target.position.x - odom.pose.pose.position.x 
@@ -49,15 +59,26 @@ class PointTracker:
         theta = eulerAngles[2]
         self.alpha = -theta + atan2(delta_y, delta_x)
         self.beta = theta + self.alpha
-        print("alpha:"+str(self.alpha) + "beta" + str(self.beta) + "rho:" + str(self.rho)+ "theta" + str(theta))
+        # print("alpha:"+str(self.alpha) + "beta" + str(self.beta) + "rho:" + str(self.rho)+ "theta" + str(theta))
 
     def cmd_vel_pub(self):
         # Compute desired velocities based on control laws
         v = self.k_rho * self.rho
         w = self.k_alpha * self.alpha + self.k_beta * self.beta
-        if(self.rho < 0.05): #ONce close enough to point, stop moving
+        if (self.rho < 0): # invalid rho, do nothing and wait for next callback, see elif case
             v = 0
             w = 0
+        elif(self.rho < 0.05): #Once close enough to point, stop moving
+            v = 0
+            w = 0
+            print("We've reached " + str(self.current_target.position))
+            #update the index of the path to switch to the next target
+            #if the last target, remains on that index
+            self.current_path_index = min(len(self.current_path.poses) -1, self.current_path_index+1)
+            if self.current_path.poses:
+                self.rho = -1 # Invalidate current rho so we know not to use it until next odom_callback updates it
+                self.current_target = self.current_path.poses[self.current_path_index].pose
+                print("Now targeting pose (" + str(self.current_path_index) +") " + str(self.current_target.position))
         
         # Create message and publish
         twist = Twist()        #message object is a Twist
