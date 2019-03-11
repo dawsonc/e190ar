@@ -1,0 +1,251 @@
+<?xml version='1.0'?>
+<robot name="e190_bot">
+
+    <!-- Base Link -->
+    <!--
+        this is the root of our URDF model, and it
+        represents the main chassis of our robot,
+        which we are modelling as a simple cylinder,
+        assuming a uniform mass distribution.
+    -->
+    <link name="base_link">
+        <visual>
+            <!--
+                base_link is the root of our model,
+                so this is positioned at the origin
+            -->
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <!-- simple cylinder model -->
+            <geometry>
+                <cylinder length="@" radius="@"/>
+            </geometry>
+
+            <!--
+                the chassis is mostly black, so we
+                define a material with a black appearance
+            -->
+            <material name="black">
+                <color rgba="0.5 0.5 0.5 1" />
+            </material>
+        </visual>
+
+        <!--
+            We assume the mass of the base chassis is
+            distributed evenly throughout the cylinder,
+            so the inertia tensor is
+
+            I = [m(3r^2 + h^2)/12   0                   0
+                 0                  m(3r^2 + h^2)/12    0
+                 0                  0                   (mr^2)/2]
+            
+            where r = @ and h = @ are the chassis cylinder
+            radius and height as defined above
+        -->
+        <inertial>
+            <mass value="@"/>
+            <inertia ixx="@" ixy="0.0" ixz="0.0"
+                             iyy="@" iyz="0.0"
+                                     izz="@"/>
+        </inertial>
+
+        <!-- Base collision -->
+        <!--
+            This defines a bounding cylinder for our base
+            chassis that can be used for collision detection
+            when we simulate the robot. Since the cylindrical
+            model of our robot's chassis is fairly simple,
+            we can make the collision geometry the same as
+            the visual geometry (this would change if our
+            model were more complex)
+        -->
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <cylinder length="@" radius="@"/>
+            </geometry>
+        </collision>
+
+        <!-- Caster Wheel -->
+        <!--
+            here we define the geometry for the caster
+            wheel attached to the bottom of the chassis
+        -->
+        <visual name="caster">
+            <origin xyz="@ 0 @" rpy="0 0 0" />
+            <geometry>
+                <sphere radius="@" />
+            </geometry>
+
+            <!--
+                the caster is mostly white, so we'll 
+                define a material for that
+            -->
+            <material name="white">
+                <color rgba="1 1 1 1" />
+            </material>
+        </visual>
+
+        <!--
+            We model the caster wheel as a sphere
+            so the inertia tensor is
+
+            I = [2mr^2/5   0          0
+                 0         2mr^2/5    0
+                 0         0          2mr^2/5]
+            
+            where r = @ is the caster wheel
+            radius as defined above
+        -->
+        <inertial>
+            <mass value="@"/>
+            <inertia ixx="@" ixy="0.0" ixz="0.0"
+                             iyy="@" iyz="0.0"
+                                     izz="@"/>
+        </inertial>
+
+        <!-- Caster collision -->
+        <!--
+            This defines a bounding sphere for our caster
+            wheel that can be used for collision detection
+            when we simulate the robot. Since the geometry
+            of this component is fairly simple, we can
+            make the collision geometry the same as
+            the visual geometry (this would change if our
+            model were more complex)
+        -->
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <sphere radius="@" />
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- Right Wheel -->
+    <!-- We're modeling each wheel as a simple cylinder -->
+    <link name="right_wheel">
+        <visual>
+            <!-- we have to rotate the cylinder 90 degrees around the x-axis -->
+            <!-- note that we aren't adjusting for relative location of the wheel yet,
+                 since the joint takes care of that -->
+            <origin xyz="0 0 0" rpy="1.570795 0 0" />
+            <geometry>
+                <cylinder length="@" radius="@" />
+            </geometry>
+
+            <!-- the wheels are mostly white, so we can reuse that material -->
+            <material name="white"/>
+        </visual>
+
+
+        <!--
+            We assume the mass of the wheel is
+            distributed evenly throughout the cylinder,
+            so the inertia tensor is
+
+            I = [(mr^2)/2    0                   0
+                 0           m(3r^2 + h^2)/12    0
+                 0           0                   m(3r^2 + h^2)/12]
+            
+            where r = @ and h = @ are the wheel cylinder
+            radius and height as defined above.
+            
+            Recall that the wheel has been rotated 90 degrees
+            about the x-axis, so we adjust the tensor accordingly.
+        -->
+        <inertial>
+            <mass value="@"/>
+            <inertia ixx="@" ixy="0.0" ixz="0.0"
+                             iyy="@" iyz="0.0"
+                                     izz="@"/>
+        </inertial>
+
+        <!-- Right Wheel collision -->
+        <!-- copy simple wheel cylinder geometry, no need to further simplify -->
+        <collision>
+            <origin xyz="0 0 0" rpy="1.570795 0 0" />
+            <geometry>
+                <cylinder length="@" radius="@" />
+            </geometry>
+        </collision>
+    </link>
+    <!--
+        The wheel is fully constrained in translation, and rotation around
+        the x- and z-axes is fully constrained. Rotation around the y-axis
+        is not restricted, so the wheel can rotate continuously around that
+        axis.
+
+        The joint also defines the constant offset from the base_link to
+        the wheel, which is in the -y direction for the right wheel
+    -->
+    <joint name="joint_right_wheel" type="continuous">
+        <parent link="base_link"/>
+        <child link="right_wheel"/>
+        <origin xyz="0 -@ 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0" />
+    </joint>
+
+    <!-- Left Wheel -->
+    <!-- We're modeling each wheel as a simple cylinder -->
+    <link name="left_wheel">
+        <visual>
+            <!-- we have to rotate the cylinder 90 degrees around the x-axis -->
+            <!-- note that we aren't adjusting for relative location of the wheel yet,
+                 since the joint takes care of that -->
+            <origin xyz="0 0 0" rpy="1.570795 0 0" />
+            <geometry>
+                <cylinder length="0.1" radius="0.2" />
+            </geometry>
+
+            <!-- the wheels are mostly white, so we can reuse that material -->
+            <material name="white"/>
+        </visual>
+
+        <!--
+            We assume the mass of the wheel is
+            distributed evenly throughout the cylinder,
+            so the inertia tensor is
+
+            I = [(mr^2)/2    0                   0
+                 0           m(3r^2 + h^2)/12    0
+                 0           0                   m(3r^2 + h^2)/12]
+            
+            where r = @ and h = @ are the wheel cylinder
+            radius and height as defined above.
+            
+            Recall that the wheel has been rotated 90 degrees
+            about the x-axis, so we adjust the tensor accordingly.
+        -->
+        <inertial>
+            <mass value="@"/>
+            <inertia ixx="@" ixy="0.0" ixz="0.0"
+                             iyy="@" iyz="0.0"
+                                     izz="@"/>
+        </inertial>
+
+        <!-- Left Wheel collision -->
+        <!-- copy simple wheel cylinder geometry, no need to further simplify -->
+        <collision>
+            <origin xyz="0 0 0" rpy="1.570795 0 0" />
+            <geometry>
+                <cylinder length="0.1" radius="0.2" />
+            </geometry>
+        </collision>
+    </link>
+    <!--
+        The wheel is fully constrained in translation, and rotation around
+        the x- and z-axes is fully constrained. Rotation around the y-axis
+        is not restricted, so the wheel can rotate continuously around that
+        axis.
+
+        The joint also defines the constant offset from the base_link to
+        the wheel, which is in the +y direction for the left wheel
+    -->
+    <joint name="joint_left_wheel" type="continuous">
+        <parent link="base_link"/>
+        <child link="left_wheel"/>
+        <origin xyz="0 @ 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0" />
+    </joint>
+
+</robot>
