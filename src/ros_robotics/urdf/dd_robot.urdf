@@ -9,6 +9,14 @@
                 <box size="0.5 0.5 0.25"/>
             </geometry>
         </visual>
+
+        <!-- Caster Wheel -->
+        <visual name="caster">
+            <origin xyz="0.2 0 -0.125" rpy="0 0 0" />
+            <geometry>
+                <sphere radius="0.05" />
+            </geometry>
+        </visual>
     </link>
 
     <!-- Right Wheel -->
