@@ -17,7 +17,7 @@
             <origin xyz="0 0 0" rpy="0 0 0" />
             <!-- simple cylinder model -->
             <geometry>
-                <cylinder length="@" radius="@"/>
+                <cylinder length="0.03" radius="0.075"/>
             </geometry>
 
             <!--
@@ -38,14 +38,14 @@
                  0                  m(3r^2 + h^2)/12    0
                  0                  0                   (mr^2)/2]
             
-            where r = @ and h = @ are the chassis cylinder
+            where r = 0.075 and h = 0.03 are the chassis cylinder
             radius and height as defined above
         -->
         <inertial>
-            <mass value="@"/>
-            <inertia ixx="@" ixy="0.0" ixz="0.0"
-                             iyy="@" iyz="0.0"
-                                     izz="@"/>
+            <mass value="0.308"/>
+            <inertia ixx="0.00016747" ixy="0.0" ixz="0.0"
+                             iyy="0.00016747" iyz="0.0"
+                                     izz="0.00086625"/>
         </inertial>
 
         <!-- Base collision -->
@@ -61,7 +61,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <cylinder length="@" radius="@"/>
+                <cylinder length="0.03" radius="0.075"/>
             </geometry>
         </collision>
 
@@ -71,9 +71,9 @@
             wheel attached to the bottom of the chassis
         -->
         <visual name="caster">
-            <origin xyz="@ 0 @" rpy="0 0 0" />
+            <origin xyz="0.05 0 -0.021" rpy="0 0 0" />
             <geometry>
-                <sphere radius="@" />
+                <sphere radius="0.0125" />
             </geometry>
 
             <!--
@@ -93,14 +93,14 @@
                  0         2mr^2/5    0
                  0         0          2mr^2/5]
             
-            where r = @ is the caster wheel
+            where r = 0.0125 is the caster wheel
             radius as defined above
         -->
         <inertial>
-            <mass value="@"/>
-            <inertia ixx="@" ixy="0.0" ixz="0.0"
-                             iyy="@" iyz="0.0"
-                                     izz="@"/>
+            <mass value="0.01"/>
+            <inertia ixx="0.0000006" ixy="0.0" ixz="0.0"
+                             iyy="0.0000006" iyz="0.0"
+                                     izz="0.0000006"/>
         </inertial>
 
         <!-- Caster collision -->
@@ -114,9 +114,9 @@
             model were more complex)
         -->
         <collision>
-            <origin xyz="0 0 0" rpy="0 0 0" />
+            <origin xyz="0.05 0 -0.021" rpy="0 0 0" />
             <geometry>
-                <sphere radius="@" />
+                <sphere radius="0.0125" />
             </geometry>
         </collision>
     </link>
@@ -130,7 +130,7 @@
                  since the joint takes care of that -->
             <origin xyz="0 0 0" rpy="1.570795 0 0" />
             <geometry>
-                <cylinder length="@" radius="@" />
+                <cylinder length="0.008" radius="0.0335" />
             </geometry>
 
             <!-- the wheels are mostly white, so we can reuse that material -->
@@ -147,17 +147,19 @@
                  0           m(3r^2 + h^2)/12    0
                  0           0                   m(3r^2 + h^2)/12]
             
-            where r = @ and h = @ are the wheel cylinder
+            where r = 0.0335 and h = 0.008 are the wheel cylinder
             radius and height as defined above.
             
             Recall that the wheel has been rotated 90 degrees
             about the x-axis, so we adjust the tensor accordingly.
+
+            The inertia of each wheel is much much smaller than that of the chassis itself.
         -->
         <inertial>
-            <mass value="@"/>
-            <inertia ixx="@" ixy="0.0" ixz="0.0"
-                             iyy="@" iyz="0.0"
-                                     izz="@"/>
+            <mass value="0.012"/>
+            <inertia ixx="0.000006" ixy="0.0" ixz="0.0"
+                             iyy="0.000001" iyz="0.0"
+                                     izz="0.000001"/>
         </inertial>
 
         <!-- Right Wheel collision -->
@@ -165,7 +167,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="1.570795 0 0" />
             <geometry>
-                <cylinder length="@" radius="@" />
+                <cylinder length="0.008" radius="0.0335" />
             </geometry>
         </collision>
     </link>
@@ -181,7 +183,7 @@
     <joint name="joint_right_wheel" type="continuous">
         <parent link="base_link"/>
         <child link="right_wheel"/>
-        <origin xyz="0 -@ 0" rpy="0 0 0"/>
+        <origin xyz="0 -0.07 0" rpy="0 0 0"/>
         <axis xyz="0 1 0" />
     </joint>
 
@@ -194,7 +196,7 @@
                  since the joint takes care of that -->
             <origin xyz="0 0 0" rpy="1.570795 0 0" />
             <geometry>
-                <cylinder length="0.1" radius="0.2" />
+                <cylinder length="0.008" radius="0.0335" />
             </geometry>
 
             <!-- the wheels are mostly white, so we can reuse that material -->
@@ -210,17 +212,19 @@
                  0           m(3r^2 + h^2)/12    0
                  0           0                   m(3r^2 + h^2)/12]
             
-            where r = @ and h = @ are the wheel cylinder
+            where r = 0.0335 and h = 0.008 are the wheel cylinder
             radius and height as defined above.
             
             Recall that the wheel has been rotated 90 degrees
             about the x-axis, so we adjust the tensor accordingly.
+
+            The inertia of each wheel is much much smaller than that of the chassis itself.
         -->
         <inertial>
-            <mass value="@"/>
-            <inertia ixx="@" ixy="0.0" ixz="0.0"
-                             iyy="@" iyz="0.0"
-                                     izz="@"/>
+            <mass value="0.012"/>
+            <inertia ixx="0.000006" ixy="0.0" ixz="0.0"
+                             iyy="0.000001" iyz="0.0"
+                                     izz="0.000001"/>
         </inertial>
 
         <!-- Left Wheel collision -->
@@ -228,7 +232,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="1.570795 0 0" />
             <geometry>
-                <cylinder length="0.1" radius="0.2" />
+                <cylinder length="0.008" radius="0.0335" />
             </geometry>
         </collision>
     </link>
@@ -244,7 +248,7 @@
     <joint name="joint_left_wheel" type="continuous">
         <parent link="base_link"/>
         <child link="left_wheel"/>
-        <origin xyz="0 @ 0" rpy="0 0 0"/>
+        <origin xyz="0 0.07 0" rpy="0 0 0"/>
         <axis xyz="0 1 0" />
     </joint>
 
