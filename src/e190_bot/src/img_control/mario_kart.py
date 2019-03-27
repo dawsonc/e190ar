@@ -45,7 +45,8 @@ class marioKart_Controller:
         if abs(twist.linear.x) < 0.05*pi:
             twist.linear.x =0
         #need to set a scaling, maybe subtract a value
-        twist.angular.z = self.eulerAngles[2]
+        twist.angular.z = -self.eulerAngles[2]
+        twist.linear.x = - twist.linear.x # make sure controls act the intuitive way
         #rospy.loginfo(twist)
         self.pub.publish(twist)
 
