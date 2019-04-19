@@ -1,0 +1,4 @@
+PoseStamped current
+PoseStamped goal
+---
+PoseStamped next
