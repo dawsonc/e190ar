@@ -54,7 +54,9 @@ CMAKE_BINARY_DIR = /home/peter/190_ws/build
 include e190_bot/CMakeFiles/e190_bot_generate_messages_py.dir/progress.make
 
 e190_bot/CMakeFiles/e190_bot_generate_messages_py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/_ir_sensor.py
+e190_bot/CMakeFiles/e190_bot_generate_messages_py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py
 e190_bot/CMakeFiles/e190_bot_generate_messages_py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/__init__.py
+e190_bot/CMakeFiles/e190_bot_generate_messages_py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/__init__.py
 
 
 /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/_ir_sensor.py: /opt/ros/kinetic/lib/genpy/genmsg_py.py
@@ -62,14 +64,33 @@ e190_bot/CMakeFiles/e190_bot_generate_messages_py: /home/peter/190_ws/devel/lib/
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/peter/190_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Python from MSG e190_bot/ir_sensor"
 	cd /home/peter/190_ws/build/e190_bot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/peter/190_ws/src/e190_bot/msg/ir_sensor.msg -Ie190_bot:/home/peter/190_ws/src/e190_bot/msg -Igeometry_msgs:/opt/ros/kinetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -p e190_bot -o /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg
 
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py: /opt/ros/kinetic/lib/genpy/gensrv_py.py
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py: /home/peter/190_ws/src/e190_bot/srv/path_Service.srv
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py: /opt/ros/kinetic/share/geometry_msgs/msg/Quaternion.msg
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py: /opt/ros/kinetic/share/geometry_msgs/msg/PoseStamped.msg
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py: /opt/ros/kinetic/share/geometry_msgs/msg/Pose.msg
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py: /opt/ros/kinetic/share/std_msgs/msg/Header.msg
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py: /opt/ros/kinetic/share/geometry_msgs/msg/Point.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/peter/190_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Python code from SRV e190_bot/path_Service"
+	cd /home/peter/190_ws/build/e190_bot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/genpy/cmake/../../../lib/genpy/gensrv_py.py /home/peter/190_ws/src/e190_bot/srv/path_Service.srv -Ie190_bot:/home/peter/190_ws/src/e190_bot/msg -Igeometry_msgs:/opt/ros/kinetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -p e190_bot -o /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv
+
 /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/__init__.py: /opt/ros/kinetic/lib/genpy/genmsg_py.py
 /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/__init__.py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/_ir_sensor.py
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/peter/190_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Python msg __init__.py for e190_bot"
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/__init__.py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/peter/190_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Generating Python msg __init__.py for e190_bot"
 	cd /home/peter/190_ws/build/e190_bot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg --initpy
+
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/__init__.py: /opt/ros/kinetic/lib/genpy/genmsg_py.py
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/__init__.py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/_ir_sensor.py
+/home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/__init__.py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/peter/190_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Generating Python srv __init__.py for e190_bot"
+	cd /home/peter/190_ws/build/e190_bot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv --initpy
 
 e190_bot_generate_messages_py: e190_bot/CMakeFiles/e190_bot_generate_messages_py
 e190_bot_generate_messages_py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/_ir_sensor.py
+e190_bot_generate_messages_py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/_path_Service.py
 e190_bot_generate_messages_py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/msg/__init__.py
+e190_bot_generate_messages_py: /home/peter/190_ws/devel/lib/python2.7/dist-packages/e190_bot/srv/__init__.py
 e190_bot_generate_messages_py: e190_bot/CMakeFiles/e190_bot_generate_messages_py.dir/build.make
 
 .PHONY : e190_bot_generate_messages_py

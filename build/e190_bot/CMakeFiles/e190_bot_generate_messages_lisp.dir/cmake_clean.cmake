@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/e190_bot_generate_messages_lisp"
   "/home/peter/190_ws/devel/share/common-lisp/ros/e190_bot/msg/ir_sensor.lisp"
+  "/home/peter/190_ws/devel/share/common-lisp/ros/e190_bot/srv/path_Service.lisp"
 )
 
 # Per-language clean rules from dependency scanning.

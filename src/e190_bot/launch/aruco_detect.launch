@@ -9,7 +9,7 @@
   <arg name="do_pose_estimation" default="true"/>
   <arg name="ignore_fiducials" default="" />
   <arg name="fiducial_len_override" default="" />
-
+ 
   <include file="$(find e190_bot)/launch/usb_cam.launch"/>
 
   <node pkg="aruco_detect" name="aruco_detect" type="aruco_detect" respawn="false">
@@ -23,4 +23,7 @@
     <remap from="/camera/compressed" to="$(arg camera)/image_raw/compressed"/>    
     <remap from="/camera_info" to="$(arg camera)/camera_info"/>
   </node>
+
+  <node pkg="e190_bot" name="mario_kart" type="mario_kart.py" output="screen"/>
+  <node name="control" pkg="e190_bot" type="control.py"/>
 </launch>

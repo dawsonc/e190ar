@@ -6,7 +6,7 @@ import tf
 import numpy as np
 from math import cos, sin, pi, exp, sqrt, atan2
 
-from geometry_msgs.msg import Transform, Twist
+from geometry_msgs.msg import Transform, Twist, Vector3
 from fiducial_msgs.msg import FiducialTransformArray
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
@@ -18,6 +18,8 @@ class marioKart_Controller:
             self.transform_sub = rospy.Subscriber('fiducial_transforms', FiducialTransformArray, self.transform_callback)
             self.pub = rospy.Publisher('cmd_vel',Twist, queue_size=10)
 
+            self.poseTranslation = Vector3()
+            self.poseTranslation.z = 0.5
             
             rate = rospy.Rate(5)    #10 Hz
 
@@ -31,22 +33,38 @@ class marioKart_Controller:
             poseQuat = transformsArray.transforms[0].transform.rotation
             poseQuat_arr = np.array([poseQuat.x, poseQuat.y, poseQuat.z, poseQuat.w])
             self.eulerAngles = euler_from_quaternion(poseQuat_arr, 'sxyz')
-            print(self.eulerAngles)
+            # also get translation
+            self.poseTranslation = transformsArray.transforms[0].transform.translation
+            # print(self.eulerAngles)
         
-        print("hi")
+        # print("hi")
 
     def cmd_vel_pub(self):
         # Create message and publish based on euler angles
         twist = Twist()        #message object is a Twist
-        if self.eulerAngles[0] > 0 :
-            twist.linear.x = pi- self.eulerAngles[0] 
-        if self.eulerAngles[0] < 0 :
-            twist.linear.x = -pi - self.eulerAngles[0]
-        if abs(twist.linear.x) < 0.05*pi:
-            twist.linear.x =0
+        
+        # this code sets speed based on distance to aruco
+        print(self.poseTranslation.z)
+        twist.linear.x = self.poseTranslation.z - 0.5
+        if abs(twist.linear.x) < 0.05:
+            twist.linear.x = 0
+        twist.linear.x *= 2
+
+        ## this code sets speed based on tilting forward and backward
+        # if self.eulerAngles[0] > 0 :
+        #     twist.linear.x = pi- self.eulerAngles[0] 
+        # if self.eulerAngles[0] < 0 :
+        #     twist.linear.x = -pi - self.eulerAngles[0]
+        # if abs(twist.linear.x) < 0.05*pi:
+        #     twist.linear.x =0
         #need to set a scaling, maybe subtract a value
-        twist.angular.z = -self.eulerAngles[2]
-        twist.linear.x = - twist.linear.x # make sure controls act the intuitive way
+        
+        twist.angular.z = 1.5*self.eulerAngles[2] # no sign change for laptop control, minus sign for wheel control
+        print(self.eulerAngles[2])
+        if abs(twist.angular.z) < 0.1:
+            twist.angular.z = 0
+        
+        # twist.linear.x = - twist.linear.x # make sure controls act the intuitive way when you hold the wheel and use tilt control
         #rospy.loginfo(twist)
         self.pub.publish(twist)
 

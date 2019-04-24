@@ -1,7 +1,7 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
 messages_str = "/home/peter/190_ws/src/e190_bot/msg/ir_sensor.msg"
-services_str = ""
+services_str = "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv"
 pkg_name = "e190_bot"
 dependencies_str = "geometry_msgs"
 langs = "gencpp;geneus;genlisp;gennodejs;genpy"

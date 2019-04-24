@@ -37,6 +37,10 @@ if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/e190_bot/srv" TYPE FILE FILES "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv")
+endif()
+
+if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/e190_bot/cmake" TYPE FILE FILES "/home/peter/190_ws/build/e190_bot/catkin_generated/installspace/e190_bot-msg-paths.cmake")
 endif()
 

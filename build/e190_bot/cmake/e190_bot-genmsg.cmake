@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.cmake.em
 
-message(STATUS "e190_bot: 1 messages, 0 services")
+message(STATUS "e190_bot: 1 messages, 1 services")
 
 set(MSG_I_FLAGS "-Ie190_bot:/home/peter/190_ws/src/e190_bot/msg;-Igeometry_msgs:/opt/ros/kinetic/share/geometry_msgs/cmake/../msg;-Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg")
 
@@ -16,6 +16,11 @@ add_custom_target(e190_bot_generate_messages ALL)
 # verify that message/service dependencies have not changed since configure
 
 
+
+get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv" NAME_WE)
+add_custom_target(_e190_bot_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "e190_bot" "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv" "geometry_msgs/Quaternion:geometry_msgs/PoseStamped:geometry_msgs/Pose:std_msgs/Header:geometry_msgs/Point"
+)
 
 get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/msg/ir_sensor.msg" NAME_WE)
 add_custom_target(_e190_bot_generate_messages_check_deps_${_filename}
@@ -36,6 +41,12 @@ _generate_msg_cpp(e190_bot
 )
 
 ### Generating Services
+_generate_srv_cpp(e190_bot
+  "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv"
+  "${MSG_I_FLAGS}"
+  "/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Quaternion.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/PoseStamped.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Pose.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Point.msg"
+  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/e190_bot
+)
 
 ### Generating Module File
 _generate_module_cpp(e190_bot
@@ -49,6 +60,8 @@ add_custom_target(e190_bot_generate_messages_cpp
 add_dependencies(e190_bot_generate_messages e190_bot_generate_messages_cpp)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv" NAME_WE)
+add_dependencies(e190_bot_generate_messages_cpp _e190_bot_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/msg/ir_sensor.msg" NAME_WE)
 add_dependencies(e190_bot_generate_messages_cpp _e190_bot_generate_messages_check_deps_${_filename})
 
@@ -69,6 +82,12 @@ _generate_msg_eus(e190_bot
 )
 
 ### Generating Services
+_generate_srv_eus(e190_bot
+  "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv"
+  "${MSG_I_FLAGS}"
+  "/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Quaternion.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/PoseStamped.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Pose.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Point.msg"
+  ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/e190_bot
+)
 
 ### Generating Module File
 _generate_module_eus(e190_bot
@@ -82,6 +101,8 @@ add_custom_target(e190_bot_generate_messages_eus
 add_dependencies(e190_bot_generate_messages e190_bot_generate_messages_eus)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv" NAME_WE)
+add_dependencies(e190_bot_generate_messages_eus _e190_bot_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/msg/ir_sensor.msg" NAME_WE)
 add_dependencies(e190_bot_generate_messages_eus _e190_bot_generate_messages_check_deps_${_filename})
 
@@ -102,6 +123,12 @@ _generate_msg_lisp(e190_bot
 )
 
 ### Generating Services
+_generate_srv_lisp(e190_bot
+  "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv"
+  "${MSG_I_FLAGS}"
+  "/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Quaternion.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/PoseStamped.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Pose.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Point.msg"
+  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/e190_bot
+)
 
 ### Generating Module File
 _generate_module_lisp(e190_bot
@@ -115,6 +142,8 @@ add_custom_target(e190_bot_generate_messages_lisp
 add_dependencies(e190_bot_generate_messages e190_bot_generate_messages_lisp)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv" NAME_WE)
+add_dependencies(e190_bot_generate_messages_lisp _e190_bot_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/msg/ir_sensor.msg" NAME_WE)
 add_dependencies(e190_bot_generate_messages_lisp _e190_bot_generate_messages_check_deps_${_filename})
 
@@ -135,6 +164,12 @@ _generate_msg_nodejs(e190_bot
 )
 
 ### Generating Services
+_generate_srv_nodejs(e190_bot
+  "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv"
+  "${MSG_I_FLAGS}"
+  "/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Quaternion.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/PoseStamped.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Pose.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Point.msg"
+  ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/e190_bot
+)
 
 ### Generating Module File
 _generate_module_nodejs(e190_bot
@@ -148,6 +183,8 @@ add_custom_target(e190_bot_generate_messages_nodejs
 add_dependencies(e190_bot_generate_messages e190_bot_generate_messages_nodejs)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv" NAME_WE)
+add_dependencies(e190_bot_generate_messages_nodejs _e190_bot_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/msg/ir_sensor.msg" NAME_WE)
 add_dependencies(e190_bot_generate_messages_nodejs _e190_bot_generate_messages_check_deps_${_filename})
 
@@ -168,6 +205,12 @@ _generate_msg_py(e190_bot
 )
 
 ### Generating Services
+_generate_srv_py(e190_bot
+  "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv"
+  "${MSG_I_FLAGS}"
+  "/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Quaternion.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/PoseStamped.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Pose.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/geometry_msgs/cmake/../msg/Point.msg"
+  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/e190_bot
+)
 
 ### Generating Module File
 _generate_module_py(e190_bot
@@ -181,6 +224,8 @@ add_custom_target(e190_bot_generate_messages_py
 add_dependencies(e190_bot_generate_messages e190_bot_generate_messages_py)
 
 # add dependencies to all check dependencies targets
+get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/srv/path_Service.srv" NAME_WE)
+add_dependencies(e190_bot_generate_messages_py _e190_bot_generate_messages_check_deps_${_filename})
 get_filename_component(_filename "/home/peter/190_ws/src/e190_bot/msg/ir_sensor.msg" NAME_WE)
 add_dependencies(e190_bot_generate_messages_py _e190_bot_generate_messages_check_deps_${_filename})
 

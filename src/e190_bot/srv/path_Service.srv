@@ -1,4 +1,3 @@
 geometry_msgs/PoseStamped current
-geometry_msgs/PoseStamped goal
 ---
 geometry_msgs/PoseStamped next

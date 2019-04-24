@@ -7,7 +7,7 @@ import tf
 import numpy as np
 from math import cos, sin, pi, exp
 
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Vector3
 from nav_msgs.msg import Odometry
 from e190_bot.msg import ir_sensor
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
@@ -49,6 +49,7 @@ class botControl:
         rospy.Subscriber("/cmd_vel", Twist, self.cmd_vel_callback)
         
         self.pubOdom = rospy.Publisher('/odom', Odometry, queue_size=10)
+        self.pubEncoder = rospy.Publisher('/encoder', Vector3, queue_size = 10)
 
         self.pubDistL = rospy.Publisher('/distL', ir_sensor, queue_size=10)
         self.pubDistC = rospy.Publisher('/distC', ir_sensor, queue_size=10)
@@ -59,7 +60,7 @@ class botControl:
         self.L = 7.125*10**(-2)   #Wheel base radius 7.125 cm
         self.carpetCorrection = 1.3 #Correction factor for motor signal when on carpet
 
-        self.rate = rospy.Rate(5)
+        self.rate = rospy.Rate(20)
         while not rospy.is_shutdown():
             self.odom_pub();
             #print('hello')
@@ -239,6 +240,9 @@ class botControl:
                 )
 
                 self.pubOdom.publish(self.Odom) #we publish in /odom topic
+                
+                encoderData = Vector3(self.diffEncoderL, self.diffEncoderR, 0)
+                self.pubEncoder.publish(encoderData)
 
                 #about range sensors, update here
                 range_measurements = data[:-2] #range readings are here, 3d array F, L, R

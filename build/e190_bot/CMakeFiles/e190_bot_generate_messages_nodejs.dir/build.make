@@ -54,6 +54,7 @@ CMAKE_BINARY_DIR = /home/peter/190_ws/build
 include e190_bot/CMakeFiles/e190_bot_generate_messages_nodejs.dir/progress.make
 
 e190_bot/CMakeFiles/e190_bot_generate_messages_nodejs: /home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/msg/ir_sensor.js
+e190_bot/CMakeFiles/e190_bot_generate_messages_nodejs: /home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv/path_Service.js
 
 
 /home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/msg/ir_sensor.js: /opt/ros/kinetic/lib/gennodejs/gen_nodejs.py
@@ -61,8 +62,19 @@ e190_bot/CMakeFiles/e190_bot_generate_messages_nodejs: /home/peter/190_ws/devel/
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/peter/190_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating Javascript code from e190_bot/ir_sensor.msg"
 	cd /home/peter/190_ws/build/e190_bot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/peter/190_ws/src/e190_bot/msg/ir_sensor.msg -Ie190_bot:/home/peter/190_ws/src/e190_bot/msg -Igeometry_msgs:/opt/ros/kinetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -p e190_bot -o /home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/msg
 
+/home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv/path_Service.js: /opt/ros/kinetic/lib/gennodejs/gen_nodejs.py
+/home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv/path_Service.js: /home/peter/190_ws/src/e190_bot/srv/path_Service.srv
+/home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv/path_Service.js: /opt/ros/kinetic/share/geometry_msgs/msg/Quaternion.msg
+/home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv/path_Service.js: /opt/ros/kinetic/share/geometry_msgs/msg/PoseStamped.msg
+/home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv/path_Service.js: /opt/ros/kinetic/share/geometry_msgs/msg/Pose.msg
+/home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv/path_Service.js: /opt/ros/kinetic/share/std_msgs/msg/Header.msg
+/home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv/path_Service.js: /opt/ros/kinetic/share/geometry_msgs/msg/Point.msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/peter/190_ws/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Generating Javascript code from e190_bot/path_Service.srv"
+	cd /home/peter/190_ws/build/e190_bot && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/kinetic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /home/peter/190_ws/src/e190_bot/srv/path_Service.srv -Ie190_bot:/home/peter/190_ws/src/e190_bot/msg -Igeometry_msgs:/opt/ros/kinetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg -p e190_bot -o /home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv
+
 e190_bot_generate_messages_nodejs: e190_bot/CMakeFiles/e190_bot_generate_messages_nodejs
 e190_bot_generate_messages_nodejs: /home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/msg/ir_sensor.js
+e190_bot_generate_messages_nodejs: /home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv/path_Service.js
 e190_bot_generate_messages_nodejs: e190_bot/CMakeFiles/e190_bot_generate_messages_nodejs.dir/build.make
 
 .PHONY : e190_bot_generate_messages_nodejs

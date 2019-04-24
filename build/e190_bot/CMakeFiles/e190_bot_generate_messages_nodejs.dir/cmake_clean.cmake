@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/e190_bot_generate_messages_nodejs"
   "/home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/msg/ir_sensor.js"
+  "/home/peter/190_ws/devel/share/gennodejs/ros/e190_bot/srv/path_Service.js"
 )
 
 # Per-language clean rules from dependency scanning.

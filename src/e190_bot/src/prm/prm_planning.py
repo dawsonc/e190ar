@@ -16,6 +16,8 @@ from nav_msgs.msg import Path
 from nav_msgs.msg import OccupancyGrid
 from nav_msgs.srv import GetMap
 
+from e190_bot.srv import *
+
 
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
@@ -25,10 +27,12 @@ class prm_planning:
 
 		rospy.init_node('prm_planning', anonymous=True)
 
+		s = rospy.Service('path_Service', path_Service, self.path_Service_callback)
+
 		# subscribe to /goal topic, you can use "2D Nav Goal" tab on RViz to set a goal by mouse
 		# config 2D Nav Goal using panels->tool properties
 		rospy.Subscriber("/goal", PoseStamped, self.goal_callback)
-		rospy.Subscriber("/odom", Odometry, self.odom_callback)
+		#rospy.Subscriber("/odom", Odometry, self.odom_callback)
 
 		self.pubPlan = rospy.Publisher('/plan', Path, queue_size=10)
 
@@ -39,7 +43,7 @@ class prm_planning:
 		self.start_j = 0
 		self.start_id = 0 #not important most of time
 
-
+		self.goal = PoseStamped()
 		self.goal_i = 0
 		self.goal_j = 0
 		self.goal_id = 0 #not important most of time
@@ -56,9 +60,10 @@ class prm_planning:
 
 		self.nodes = [] #an array of all nodes in our tree
 
-		self.rate = rospy.Rate(2)
-		while not rospy.is_shutdown():
-			self.rate.sleep();
+		rospy.spin()
+		#self.rate = rospy.Rate(2)
+		#while not rospy.is_shutdown():
+		#	self.rate.sleep();
 
 
 	def path_init(self):
@@ -77,23 +82,31 @@ class prm_planning:
 			self.map_height = self.map.info.height
 			self.map_res = self.map.info.resolution
 
-			print(self.map.data)
-			print("Map size: " + str(self.map_res*self.map_width) +" , " + str(self.map_res*self.map_height))
+			# print(self.map.data)
+			# print("Map size: " + str(self.map_res*self.map_width) +" , " + str(self.map_res*self.map_height))
 		except rospy.ServiceException, e:
 			print "Map service call failed: %s"%e
 
-	def goal_callback(self,Goal):
+
+	def goal_callback(self, Goal):
+		self.goal = Goal
+
+	def path_Service_callback(self,req):
+		Goal = self.goal
+		start = req.current
 		self.goal_x = min(Goal.pose.position.x, self.map_width*self.map_res*0.99)
 		self.goal_x = max(self.goal_x, 0)
 		self.goal_y = min(Goal.pose.position.y, self.map_height*self.map_res*0.99)
 		self.goal_y = max(self.goal_y, 0)
 		self.goal_o = Goal.pose.orientation	
 		
-		self.start_x = self.current_x
-		self.start_y = self.current_y
-		self.start_o = self.current_o
+		self.start_x = min(start.pose.position.x, self.map_width*self.map_res*0.99)
+		self.start_x = max(self.start_x, 0)
+		self.start_y = min(start.pose.position.y, self.map_height*self.map_res*0.99)
+		self.start_y = max(self.start_y, 0)
+		self.start_o = start.pose.orientation	
 
-		print("goal_clicked: " + str(self.goal_x) + " , " + str(self.goal_y))
+		#print("goal_clicked: " + str(self.goal_x) + " , " + str(self.goal_y))
 
 		self.goal_i, self.goal_j, self.goal_id = self.pos_to_grid(self.goal_x, self.goal_y)
 		self.start_i, self.start_j, self.start_id = self.pos_to_grid(self.start_x,self.start_y)
@@ -101,7 +114,8 @@ class prm_planning:
 
 		self.plan_path()
 
-		self.pubPlan.publish(self.prm_plan) #plan is published here!
+		#self.pubPlan.publish(self.prm_plan) #plan is published here!
+		return path_ServiceResponse(self.prm_plan.poses[1])
 
 	def odom_callback(self,Odom):
 		# When you are using your actual robot, you need to update this
@@ -168,8 +182,8 @@ class prm_planning:
 		while not self.collisionDetect(last_node.x, last_node.y, self.goal_node.x, self.goal_node.y):
 			#Generate random target location for node
 			last_node_coordinates = self.generate_Node()
-			print(len(self.nodes))
-			print(last_node_coordinates)
+			#print(len(self.nodes))
+			#print(last_node_coordinates)
 
 			#FInd nearest existing node to target using nearest vertex
 			#Loop through array, and calculate distances from each of the nodes
@@ -180,7 +194,7 @@ class prm_planning:
 				if current_distance < minDistance:
 					minDistance_node = node
 					minDistance = current_distance
-			print(str(minDistance))
+			#print(str(minDistance))
 
 			#Add a node in the direction of the target at a random radius from nearest node
 			new_node_x_vector = last_node_coordinates[0] - minDistance_node.x  
@@ -191,8 +205,8 @@ class prm_planning:
 			new_node_y = new_node_y_vector*new_node_scaling + minDistance_node.y
 			new_node_y = min( 2.99, new_node_y)
 
-			print("new node: ")
-			print(new_node_x, new_node_y)
+			#print("new node: ")
+			#print(new_node_x, new_node_y)
 
 			#Then check that their is a collision free path to target
 			if self.collisionDetect(minDistance_node.x, minDistance_node.y, new_node_x, new_node_y):
@@ -202,8 +216,8 @@ class prm_planning:
 				self.nodes.append(new_node)
 				last_node = new_node
 			
-			print("last node: ")
-			print(last_node.x, last_node.y)
+			#print("last node: ")
+			#print(last_node.x, last_node.y)
 
 			
 			#Now the loop will break, and we can calculate the path to the node
@@ -273,8 +287,8 @@ class prm_planning:
 		#print(line)
 
 		for k in range(0,len(line)):
-			print("Check map gird: " + str(line[k][0]) + " " + str(line[k][1]))
-			print(self.map.data[line[k][1] * self.map_width + line[k][0]])
+			#print("Check map gird: " + str(line[k][0]) + " " + str(line[k][1]))
+			#print(self.map.data[line[k][1] * self.map_width + line[k][0]])
 			
 			#Map value 0 - 100
 			if(self.map.data[line[k][1] * self.map_width + line[k][0]]!=0):

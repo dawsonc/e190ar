@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/e190_bot_generate_messages_cpp"
   "/home/peter/190_ws/devel/include/e190_bot/ir_sensor.h"
+  "/home/peter/190_ws/devel/include/e190_bot/path_Service.h"
 )
 
 # Per-language clean rules from dependency scanning.
