@@ -206,7 +206,7 @@ class botControl:
                 # #https://wiki.ros.org/tf/Tutorials/Writing%20a%20tf%20broadcaster%20%28Python%29
                 self.odom_broadcaster.sendTransform(
                     (self.Odom.pose.pose.position.x, self.Odom.pose.pose.position.y, .0),
-                    tf.transformations.quaternion_from_euler(.0, .0, 1.57),
+                    quat,
                     rospy.Time.now(),
                     self.Odom.child_frame_id,
                     self.Odom.header.frame_id,
@@ -246,7 +246,7 @@ class botControl:
 
                 #about range sensors, update here
                 range_measurements = data[:-2] #range readings are here, 3d array F, L, R
-                # self.pubRangeSensor(range_measurements)
+                self.pubRangeSensor(range_measurements)
                 # print ("update ir measurements ",range_measurements)
             except:
                 print("Dropped packet!")

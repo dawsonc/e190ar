@@ -26,12 +26,14 @@ class PointTracker:
         self.rho = 0
         self.k_alpha = -6/8
         self.k_beta = 2/8
-        self.k_rho = 0.5
+        self.k_rho = 0.50
         self.odom = Odometry()
+        self.goal = Pose()
 
         rospy.init_node('pointTracking', anonymous=True)
         self.pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
-        self.odom_sub = rospy.Subscriber('odom', Odometry, self.odom_callback)
+        self.odom_sub = rospy.Subscriber('/odom', Odometry, self.odom_callback)
+        self.goal_sub = rospy.Subscriber("/goal", PoseStamped, self.goal_callback)
         #Now get targets from the goal_path topic
         #self.target_sub = rospy.Subscriber('targetPose', Pose, self.target_callback)
         #self.path_sub = rospy.Subscriber('goal_Path', Path, self.path_callback)
@@ -43,21 +45,31 @@ class PointTracker:
         while not rospy.is_shutdown():
             self.cmd_vel_pub()
             self.rate.sleep()
+
+    def goal_callback(self, Goal):
+		self.goal = Goal.pose
         
     def target_callback(self, target):
         self.current_target.position = target.position
         #print("hi")
 
     def path_Service_client(self):
-        rospy.wait_for_service('path_Service')
+        print("Waiting for Service")
         try:
+            # Create message and publish
+            twist = Twist()        #message object is a Twist
+            twist.linear.x = 0
+            twist.angular.z = 0
+            #rospy.loginfo(twist)
+            self.pub.publish(twist)
+            rospy.wait_for_service('path_Service', timeout = 1)
             path_Service_inst = rospy.ServiceProxy('path_Service', path_Service)
             current = PoseStamped()
             current.pose = self.odom.pose.pose
             resp1 = path_Service_inst(current)
             self.current_target = resp1.next.pose
-            print("REceived target" + str(self.current_target))
-        except rospy.ServiceException, e:
+            print("Received target" + str(self.current_target))
+        except rospy.ROSException, e:
             print "Service call failed: %s"%e
 
     def path_callback(self, path):
@@ -77,6 +89,8 @@ class PointTracker:
         theta = eulerAngles[2]
         self.alpha = -theta + atan2(delta_y, delta_x)
         self.beta = theta + self.alpha
+        #wrap from 0 to 2pi to -pi to pi
+        self.beta = self.beta = 2*pi*np.floor((self.beta+pi)/(2*pi))
         # print("alpha:"+str(self.alpha) + "beta" + str(self.beta) + "rho:" + str(self.rho)+ "theta" + str(theta))
 
     def cmd_vel_pub(self):
@@ -96,7 +110,8 @@ class PointTracker:
         if (self.rho < 0): # invalid rho, do nothing and wait for next callback, see elif case
             v = 0
             w = 0
-        elif(self.rho < 0.05): #Once close enough to point, stop moving
+        
+        elif(self.rho < 0.15 and self.current_target != self.goal) or (self.current_target == self.goal and self.rho < 0.05 ): #Once close enough to point, stop moving
             v = 0
             w = 0
             print("We've reached " + str(self.current_target.position))
@@ -110,7 +125,9 @@ class PointTracker:
             self.path_Service_client()
         # Create message and publish
         twist = Twist()        #message object is a Twist
-        twist.linear.x = v
+        twist.linear.x = v*0.2
+        if (self.alpha > 0.5):
+            twist.linear.x = 0
         twist.angular.z = w
         #rospy.loginfo(twist)
         self.pub.publish(twist)

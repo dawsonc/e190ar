@@ -6,6 +6,7 @@ import tf
 
 import random
 import math
+import numpy as np
 
 from road_map_node import PRM_Node 
 
@@ -26,15 +27,6 @@ class prm_planning:
 	def __init__(self):
 
 		rospy.init_node('prm_planning', anonymous=True)
-
-		s = rospy.Service('path_Service', path_Service, self.path_Service_callback)
-
-		# subscribe to /goal topic, you can use "2D Nav Goal" tab on RViz to set a goal by mouse
-		# config 2D Nav Goal using panels->tool properties
-		rospy.Subscriber("/goal", PoseStamped, self.goal_callback)
-		#rospy.Subscriber("/odom", Odometry, self.odom_callback)
-
-		self.pubPlan = rospy.Publisher('/plan', Path, queue_size=10)
 
 		self.path_init()
 		self.map_init()# call map_server using service, other methods possible
@@ -59,6 +51,15 @@ class prm_planning:
 		self.current_o.w = quat[3]
 
 		self.nodes = [] #an array of all nodes in our tree
+
+		s = rospy.Service('path_Service', path_Service, self.path_Service_callback)
+
+		# subscribe to /goal topic, you can use "2D Nav Goal" tab on RViz to set a goal by mouse
+		# config 2D Nav Goal using panels->tool properties
+		rospy.Subscriber("/goal", PoseStamped, self.goal_callback)
+		#rospy.Subscriber("/odom", Odometry, self.odom_callback)
+
+		self.pubPlan = rospy.Publisher('/plan', Path, queue_size=10)
 
 		rospy.spin()
 		#self.rate = rospy.Rate(2)
@@ -159,6 +160,24 @@ class prm_planning:
 
 		#Rapidly - Exploring Tree PRM
 		# Here is a hint that how you deal "topological" prm_node
+
+		#create goal node
+		self.goal_node.x = self.goal_x
+		self.goal_node.y = self.goal_y
+		self.goal_node.index = 1
+
+		# make sure start node is free
+		for i in range(1, 10):
+			grid_i1, grid_j1, grid_id1 = self.pos_to_grid(self.start_x, self.start_y)
+
+			if self.map.data[grid_id1]==0:
+				break
+			
+			print("Jiggling start node")
+			# otherwise randomly displace start_pose 
+			self.start_x += -0.01
+			self.start_y += -0.01
+
 		#create start node
 		self.start_node.x = self.start_x
 		self.start_node.y = self.start_y
@@ -167,19 +186,16 @@ class prm_planning:
 		# list to keep track of nodes
 		self.nodes = [self.start_node]
 
-		#create goal node
-		self.goal_node.x = self.goal_x
-		self.goal_node.y = self.goal_y
-		self.goal_node.index = 1
-
 		#clear path
 		self.prm_plan.poses = []
 		#Loop 
 		last_node = self.start_node
+		numiter =0
 		#Stop loop if no collision between node and goal
 		# by checking each new node for a path to goal here, we take a greedy approach
 		# so we stop as soon as we find any path
 		while not self.collisionDetect(last_node.x, last_node.y, self.goal_node.x, self.goal_node.y):
+			numiter +=1
 			#Generate random target location for node
 			last_node_coordinates = self.generate_Node()
 			#print(len(self.nodes))
@@ -199,7 +215,7 @@ class prm_planning:
 			#Add a node in the direction of the target at a random radius from nearest node
 			new_node_x_vector = last_node_coordinates[0] - minDistance_node.x  
 			new_node_y_vector = last_node_coordinates[1] - minDistance_node.y
-			new_node_scaling = random.uniform(0.01,0.5)
+			new_node_scaling = random.uniform(0.01,0.2)
 			new_node_x = new_node_x_vector*new_node_scaling + minDistance_node.x
 			new_node_x = min( 2.99, new_node_x)
 			new_node_y = new_node_y_vector*new_node_scaling + minDistance_node.y
@@ -227,12 +243,13 @@ class prm_planning:
 		path.append(self.goal_node)
 
 		#Path smoothing
- 		for n in range(1,5*len(path)):
+ 		for n in range(1,40*len(path)):
 			index1 = random.randint(0,len(path)-1)
 			index2 = random.randint(0,len(path)-1)
 			node1 = path[index1]
 			node2 = path[index2]
-			if self.collisionDetect(node1.x, node1.y, node2.x, node2.y):
+			dist = self.distance(node1.x, node1.y, node2.x, node2.y)
+			if (self.collisionDetect(node1.x, node1.y, node2.x, node2.y)) and dist < 0.4 :
 				if(index1 < index2):
 					path = path[:index1+1]+path[index2:]
 				elif (index1 > index2):
@@ -252,7 +269,10 @@ class prm_planning:
 			self.prm_plan.poses.append(node_pose)
 
 
-			
+	def distance(self, x1, y1, x2, y2):
+		dist = np.sqrt((x2-x1)**2 + (y2-y1)**2)
+		return dist
+
 	#want list of nodes-first element is start node, last node is new node
 	def path_backtrack(self, new_node):
 		if (new_node.parent is not None):
@@ -288,6 +308,7 @@ class prm_planning:
 
 		for k in range(0,len(line)):
 			#print("Check map gird: " + str(line[k][0]) + " " + str(line[k][1]))
+			#print("Sise of map:" + str(len(self.map.data)))
 			#print(self.map.data[line[k][1] * self.map_width + line[k][0]])
 			
 			#Map value 0 - 100
